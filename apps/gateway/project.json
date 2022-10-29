@@ -4,7 +4,7 @@
   "projectType": "application",
   "sourceRoot": "apps/gateway",
   "targets": {
-    "run": {
+    "serve": {
       "executor": "nx-go:run"
     },
     "build": {
