@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  task-service-db:
+    image: postgres:13.2
+    container_name: task-service-db
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: task-service
+      POSTGRES_DB: task-service
+      POSTGRES_PASSWORD: test

@@ -1,0 +1,50 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "task-service",
+  "projectType": "application",
+  "sourceRoot": "apps/task-service",
+  "targets": {
+    "serve": {
+      "executor": "nx-go:run"
+    },
+    "build": {
+      "executor": "nx-go:build"
+    },
+    "generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/task-service",
+        "commands": [
+          {
+            "command": "GOWORK=off go generate ./ent"
+          }
+        ],
+        "parallel": true
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/task-service",
+        "commands": [
+          {
+            "command": "go test -v"
+          }
+        ]
+      }
+    },
+    "init_ent": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/task-service",
+        "commands": [
+          {
+            "forwardAllArgs": true,
+            "command": "go run entgo.io/ent/cmd/ent init"
+          }
+        ],
+        "parallel": true
+      }
+    }
+  }
+}

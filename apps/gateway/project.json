@@ -1,0 +1,14 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "gateway",
+  "projectType": "application",
+  "sourceRoot": "apps/gateway",
+  "targets": {
+    "run": {
+      "executor": "nx-go:run"
+    },
+    "build": {
+      "executor": "nx-go:build"
+    }
+  }
+}

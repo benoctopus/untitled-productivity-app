@@ -1,0 +1,22 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "go-util",
+  "projectType": "library",
+  "sourceRoot": "libs/go-util",
+  "targets": {
+    "build": {
+      "executor": "nx-go:build"
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "libs/go-util",
+        "commands": [
+          {
+            "command": "go test -v"
+          }
+        ]
+      }
+    }
+  }
+}

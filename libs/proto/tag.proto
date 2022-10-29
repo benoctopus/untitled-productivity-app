@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+option go_package = "github.com/benoctopus/tasker/libs/proto";
+
+import "util.proto";
+
+service TagService {
+	rpc CreateTag(CreateTagRequest) returns (Tag) {}
+	rpc GetTag(GetTagRequest) returns (Tag) {}
+	rpc ListTags(Empty) returns (ListTagsResponse) {}
+	rpc UpdateTag(UpdateTagRequest) returns (Tag) {}
+	rpc DeleteTag(DeleteTagRequest) returns (Empty) {}
+}
+
+message Tag {
+	string id = 1;
+	string name = 2;
+	string color = 3;
+	string owner_id = 4;
+	string created_at = 5;
+	string updated_at = 6;
+}
+
+message CreateTagRequest {
+	string name = 1;
+	string color = 2;
+	string owner_id = 3;
+}
+
+message UpdateTagRequest {
+	string id = 1;
+	optional string name = 2;
+	optional string color = 3;
+}
+
+message ListTagsResponse {
+	repeated Tag tags = 1;
+}
+
+message DeleteTagRequest {
+	string id = 1;
+}
+
+message GetTagRequest {
+	string id = 1;
+}

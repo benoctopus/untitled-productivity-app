@@ -1,0 +1,34 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "proto",
+  "projectType": "library",
+  "sourceRoot": "libs/proto",
+  "targets": {
+    "build": {
+      "executor": "nx-go:build"
+    },
+    "generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "libs/proto",
+        "commands": [
+          {
+            "command": "protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative *.proto"
+          }
+        ],
+        "parallel": true
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "libs/proto",
+        "commands": [
+          {
+            "command": "echo \"Tests not implemented\""
+          }
+        ]
+      }
+    }
+  }
+}
