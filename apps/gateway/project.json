@@ -9,6 +9,17 @@
     },
     "build": {
       "executor": "nx-go:build"
+    },
+    "generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "go run github.com/99designs/gqlgen generate"
+          }
+        ],
+        "parallel": true
+      }
     }
   }
 }
