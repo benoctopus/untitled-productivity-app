@@ -13,6 +13,8 @@ const (
 	FieldID = "id"
 	// FieldTitle holds the string denoting the title field in the database.
 	FieldTitle = "title"
+	// FieldStatus holds the string denoting the status field in the database.
+	FieldStatus = "status"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -34,6 +36,7 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldTitle,
+	FieldStatus,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }
@@ -63,6 +66,10 @@ func ValidColumn(column string) bool {
 var (
 	// TitleValidator is a validator for the "title" field. It is called by the builders before save.
 	TitleValidator func(string) error
+	// DefaultStatus holds the default value on creation for the "status" field.
+	DefaultStatus uint8
+	// StatusValidator is a validator for the "status" field. It is called by the builders before save.
+	StatusValidator func(uint8) error
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.

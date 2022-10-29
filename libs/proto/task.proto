@@ -12,19 +12,28 @@ service TaskService {
 	rpc UpdateTask (UpdateTaskRequest) returns (Task) {}
 }
 
+enum TaskStatus {
+	ACTIVE = 0;
+	COMPLETE = 1;
+	WONT_DO = 2;
+	DELETED = 3;
+}
+
 
 message GetTaskRequest {
 	string id = 1;
 }
 
 message CreateTaskRequest {
-	string title = 2;
-	string owner_id = 3;
+	string title = 1;
+	string owner_id = 2;
+	optional string status = 3;
 }
 
 message UpdateTaskRequest {
 	string id = 1;
 	optional string title = 2;
+	optional string status = 3;
 }
 
 message ListTasksResponse {
@@ -34,7 +43,8 @@ message ListTasksResponse {
 message Task {
 	string id = 1;
 	string owner_id = 2;
-	string title = 3;
-	string created_at = 4;
-	string updated_at = 5;
+	TaskStatus status = 3;
+	string title = 4;
+	string created_at = 5;
+	string updated_at = 6;
 }

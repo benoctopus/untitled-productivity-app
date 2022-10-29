@@ -74,28 +74,38 @@ func init() {
 	taskDescTitle := taskFields[0].Descriptor()
 	// task.TitleValidator is a validator for the "title" field. It is called by the builders before save.
 	task.TitleValidator = taskDescTitle.Validators[0].(func(string) error)
+	// taskDescStatus is the schema descriptor for status field.
+	taskDescStatus := taskFields[1].Descriptor()
+	// task.DefaultStatus holds the default value on creation for the status field.
+	task.DefaultStatus = taskDescStatus.Default.(uint8)
+	// task.StatusValidator is a validator for the "status" field. It is called by the builders before save.
+	task.StatusValidator = func() func(uint8) error {
+		validators := taskDescStatus.Validators
+		fns := [...]func(uint8) error{
+			validators[0].(func(uint8) error),
+			validators[1].(func(uint8) error),
+		}
+		return func(status uint8) error {
+			for _, fn := range fns {
+				if err := fn(status); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	// taskDescCreatedAt is the schema descriptor for created_at field.
-	taskDescCreatedAt := taskFields[1].Descriptor()
+	taskDescCreatedAt := taskFields[2].Descriptor()
 	// task.DefaultCreatedAt holds the default value on creation for the created_at field.
 	task.DefaultCreatedAt = taskDescCreatedAt.Default.(func() time.Time)
 	// taskDescUpdatedAt is the schema descriptor for updated_at field.
-	taskDescUpdatedAt := taskFields[2].Descriptor()
+	taskDescUpdatedAt := taskFields[3].Descriptor()
 	// task.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	task.DefaultUpdatedAt = taskDescUpdatedAt.Default.(func() time.Time)
 	// task.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	task.UpdateDefaultUpdatedAt = taskDescUpdatedAt.UpdateDefault.(func() time.Time)
 	userFields := schema.User{}.Fields()
 	_ = userFields
-	// userDescCreatedAt is the schema descriptor for created_at field.
-	userDescCreatedAt := userFields[1].Descriptor()
-	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
-	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
-	// userDescUpdatedAt is the schema descriptor for updated_at field.
-	userDescUpdatedAt := userFields[2].Descriptor()
-	// user.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	user.DefaultUpdatedAt = userDescUpdatedAt.Default.(func() time.Time)
-	// user.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	user.UpdateDefaultUpdatedAt = userDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// userDescID is the schema descriptor for id field.
 	userDescID := userFields[0].Descriptor()
 	// user.IDValidator is a validator for the "id" field. It is called by the builders before save.

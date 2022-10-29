@@ -35,6 +35,27 @@ func (tu *TaskUpdate) SetTitle(s string) *TaskUpdate {
 	return tu
 }
 
+// SetStatus sets the "status" field.
+func (tu *TaskUpdate) SetStatus(u uint8) *TaskUpdate {
+	tu.mutation.ResetStatus()
+	tu.mutation.SetStatus(u)
+	return tu
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (tu *TaskUpdate) SetNillableStatus(u *uint8) *TaskUpdate {
+	if u != nil {
+		tu.SetStatus(*u)
+	}
+	return tu
+}
+
+// AddStatus adds u to the "status" field.
+func (tu *TaskUpdate) AddStatus(u int8) *TaskUpdate {
+	tu.mutation.AddStatus(u)
+	return tu
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (tu *TaskUpdate) SetCreatedAt(t time.Time) *TaskUpdate {
 	tu.mutation.SetCreatedAt(t)
@@ -161,6 +182,11 @@ func (tu *TaskUpdate) check() error {
 			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "Task.title": %w`, err)}
 		}
 	}
+	if v, ok := tu.mutation.Status(); ok {
+		if err := task.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Task.status": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -187,6 +213,20 @@ func (tu *TaskUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeString,
 			Value:  value,
 			Column: task.FieldTitle,
+		})
+	}
+	if value, ok := tu.mutation.Status(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: task.FieldStatus,
+		})
+	}
+	if value, ok := tu.mutation.AddedStatus(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: task.FieldStatus,
 		})
 	}
 	if value, ok := tu.mutation.CreatedAt(); ok {
@@ -260,6 +300,27 @@ type TaskUpdateOne struct {
 // SetTitle sets the "title" field.
 func (tuo *TaskUpdateOne) SetTitle(s string) *TaskUpdateOne {
 	tuo.mutation.SetTitle(s)
+	return tuo
+}
+
+// SetStatus sets the "status" field.
+func (tuo *TaskUpdateOne) SetStatus(u uint8) *TaskUpdateOne {
+	tuo.mutation.ResetStatus()
+	tuo.mutation.SetStatus(u)
+	return tuo
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (tuo *TaskUpdateOne) SetNillableStatus(u *uint8) *TaskUpdateOne {
+	if u != nil {
+		tuo.SetStatus(*u)
+	}
+	return tuo
+}
+
+// AddStatus adds u to the "status" field.
+func (tuo *TaskUpdateOne) AddStatus(u int8) *TaskUpdateOne {
+	tuo.mutation.AddStatus(u)
 	return tuo
 }
 
@@ -402,6 +463,11 @@ func (tuo *TaskUpdateOne) check() error {
 			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "Task.title": %w`, err)}
 		}
 	}
+	if v, ok := tuo.mutation.Status(); ok {
+		if err := task.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Task.status": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -445,6 +511,20 @@ func (tuo *TaskUpdateOne) sqlSave(ctx context.Context) (_node *Task, err error) 
 			Type:   field.TypeString,
 			Value:  value,
 			Column: task.FieldTitle,
+		})
+	}
+	if value, ok := tuo.mutation.Status(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: task.FieldStatus,
+		})
+	}
+	if value, ok := tuo.mutation.AddedStatus(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: task.FieldStatus,
 		})
 	}
 	if value, ok := tuo.mutation.CreatedAt(); ok {

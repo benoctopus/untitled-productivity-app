@@ -27,6 +27,20 @@ func (tc *TaskCreate) SetTitle(s string) *TaskCreate {
 	return tc
 }
 
+// SetStatus sets the "status" field.
+func (tc *TaskCreate) SetStatus(u uint8) *TaskCreate {
+	tc.mutation.SetStatus(u)
+	return tc
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (tc *TaskCreate) SetNillableStatus(u *uint8) *TaskCreate {
+	if u != nil {
+		tc.SetStatus(*u)
+	}
+	return tc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (tc *TaskCreate) SetCreatedAt(t time.Time) *TaskCreate {
 	tc.mutation.SetCreatedAt(t)
@@ -151,6 +165,10 @@ func (tc *TaskCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (tc *TaskCreate) defaults() {
+	if _, ok := tc.mutation.Status(); !ok {
+		v := task.DefaultStatus
+		tc.mutation.SetStatus(v)
+	}
 	if _, ok := tc.mutation.CreatedAt(); !ok {
 		v := task.DefaultCreatedAt()
 		tc.mutation.SetCreatedAt(v)
@@ -169,6 +187,14 @@ func (tc *TaskCreate) check() error {
 	if v, ok := tc.mutation.Title(); ok {
 		if err := task.TitleValidator(v); err != nil {
 			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "Task.title": %w`, err)}
+		}
+	}
+	if _, ok := tc.mutation.Status(); !ok {
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Task.status"`)}
+	}
+	if v, ok := tc.mutation.Status(); ok {
+		if err := task.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Task.status": %w`, err)}
 		}
 	}
 	if _, ok := tc.mutation.CreatedAt(); !ok {
@@ -211,6 +237,14 @@ func (tc *TaskCreate) createSpec() (*Task, *sqlgraph.CreateSpec) {
 			Column: task.FieldTitle,
 		})
 		_node.Title = value
+	}
+	if value, ok := tc.mutation.Status(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: task.FieldStatus,
+		})
+		_node.Status = value
 	}
 	if value, ok := tc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

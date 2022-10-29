@@ -88,6 +88,13 @@ func Title(v string) predicate.Task {
 	})
 }
 
+// Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
+func Status(v uint8) predicate.Task {
+	return predicate.Task(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldStatus), v))
+	})
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Task {
 	return predicate.Task(func(s *sql.Selector) {
@@ -198,6 +205,70 @@ func TitleEqualFold(v string) predicate.Task {
 func TitleContainsFold(v string) predicate.Task {
 	return predicate.Task(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldTitle), v))
+	})
+}
+
+// StatusEQ applies the EQ predicate on the "status" field.
+func StatusEQ(v uint8) predicate.Task {
+	return predicate.Task(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldStatus), v))
+	})
+}
+
+// StatusNEQ applies the NEQ predicate on the "status" field.
+func StatusNEQ(v uint8) predicate.Task {
+	return predicate.Task(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldStatus), v))
+	})
+}
+
+// StatusIn applies the In predicate on the "status" field.
+func StatusIn(vs ...uint8) predicate.Task {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Task(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldStatus), v...))
+	})
+}
+
+// StatusNotIn applies the NotIn predicate on the "status" field.
+func StatusNotIn(vs ...uint8) predicate.Task {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Task(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldStatus), v...))
+	})
+}
+
+// StatusGT applies the GT predicate on the "status" field.
+func StatusGT(v uint8) predicate.Task {
+	return predicate.Task(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldStatus), v))
+	})
+}
+
+// StatusGTE applies the GTE predicate on the "status" field.
+func StatusGTE(v uint8) predicate.Task {
+	return predicate.Task(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldStatus), v))
+	})
+}
+
+// StatusLT applies the LT predicate on the "status" field.
+func StatusLT(v uint8) predicate.Task {
+	return predicate.Task(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldStatus), v))
+	})
+}
+
+// StatusLTE applies the LTE predicate on the "status" field.
+func StatusLTE(v uint8) predicate.Task {
+	return predicate.Task(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldStatus), v))
 	})
 }
 
