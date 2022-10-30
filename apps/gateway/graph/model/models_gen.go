@@ -2,19 +2,72 @@
 
 package model
 
-type NewTodo struct {
-	Text   string `json:"text"`
-	UserID string `json:"userId"`
+import (
+	"fmt"
+	"io"
+	"strconv"
+)
+
+type CreateTaskInput struct {
+	Title   string `json:"title"`
+	OwnerID string `json:"ownerId"`
+	Status  string `json:"status"`
 }
 
-type Todo struct {
-	ID   string `json:"id"`
-	Text string `json:"text"`
-	Done bool   `json:"done"`
-	User *User  `json:"user"`
+type Task struct {
+	ID        string     `json:"id"`
+	Status    TaskStatus `json:"status"`
+	Title     string     `json:"title"`
+	Owner     *User      `json:"owner"`
+	CreatedAt string     `json:"createdAt"`
+	UpdatedAt string     `json:"updatedAt"`
 }
 
 type User struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID string `json:"id"`
+}
+
+type TaskStatus string
+
+const (
+	TaskStatusActive   TaskStatus = "ACTIVE"
+	TaskStatusComplete TaskStatus = "COMPLETE"
+	TaskStatusWontDo   TaskStatus = "WONT_DO"
+	TaskStatusDeleted  TaskStatus = "DELETED"
+)
+
+var AllTaskStatus = []TaskStatus{
+	TaskStatusActive,
+	TaskStatusComplete,
+	TaskStatusWontDo,
+	TaskStatusDeleted,
+}
+
+func (e TaskStatus) IsValid() bool {
+	switch e {
+	case TaskStatusActive, TaskStatusComplete, TaskStatusWontDo, TaskStatusDeleted:
+		return true
+	}
+	return false
+}
+
+func (e TaskStatus) String() string {
+	return string(e)
+}
+
+func (e *TaskStatus) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = TaskStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid TaskStatus", str)
+	}
+	return nil
+}
+
+func (e TaskStatus) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }

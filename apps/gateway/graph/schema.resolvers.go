@@ -5,19 +5,73 @@ package graph
 
 import (
 	"context"
-	"fmt"
+	"gateway/di"
 	"gateway/graph/generated"
 	"gateway/graph/model"
+	"proto"
 )
 
-// CreateTodo is the resolver for the createTodo field.
-func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: CreateTodo - createTodo"))
+// CreateTask is the resolver for the createTask field.
+func (r *mutationResolver) CreateTask(ctx context.Context, input model.CreateTaskInput) (*model.Task, error) {
+	return r.Query().Task(ctx, "1")
 }
 
-// Todos is the resolver for the todos field.
-func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: Todos - todos"))
+// Tasks is the resolver for the tasks field.
+func (r *queryResolver) Tasks(ctx context.Context, ownerID string) ([]*model.Task, error) {
+	var tasks []*model.Task = nil
+
+	err := di.Invoke(func(sc *di.ServiceClient) error {
+		resp, err := sc.Tasks.ListTasks(ctx, &proto.Empty{}) // TODO: implement tasks filtering and pagination
+		if err != nil {
+			return err
+		}
+
+		tasks = make([]*model.Task, len(resp.Tasks))
+
+		for i, t := range resp.Tasks {
+			status, err := t.Status.ToString()
+			if err != nil {
+				return err
+			}
+
+			tasks[i] = &model.Task{
+				ID:     t.Id,
+				Title:  t.Title,
+				Status: model.TaskStatus(status),
+				Owner:  &model.User{ID: t.OwnerId},
+			}
+		}
+
+		return nil
+	})
+
+	return tasks, err
+}
+
+// Task is the resolver for the task field.
+func (r *queryResolver) Task(ctx context.Context, id string) (*model.Task, error) {
+	var task *model.Task = nil
+
+	err := di.Invoke(func(sc *di.ServiceClient) error {
+		resp, err := sc.Tasks.GetTask(ctx, &proto.GetTaskRequest{
+			Id: id,
+		})
+		if err != nil {
+			return err
+		}
+
+		task = &model.Task{
+			ID:        resp.Id,
+			Title:     resp.Title,
+			Status:    model.TaskStatusActive,
+			Owner:     &model.User{ID: resp.OwnerId},
+			CreatedAt: resp.CreatedAt,
+			UpdatedAt: resp.UpdatedAt,
+		}
+		return nil
+	})
+
+	return task, err
 }
 
 // Mutation returns generated.MutationResolver implementation.

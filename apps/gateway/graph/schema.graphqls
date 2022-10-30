@@ -2,27 +2,42 @@
 #
 # https://gqlgen.com/getting-started/
 
-type Todo {
-  id: ID!
-  text: String!
-  done: Boolean!
-  user: User!
+enum TaskStatus {
+  ACTIVE
+  COMPLETE
+  WONT_DO
+  DELETED
+}
+
+type Task {
+  id: String!
+  status: TaskStatus!
+  title: String!
+  owner: User!
+  createdAt: String!
+  updatedAt: String!
 }
 
 type User {
-  id: ID!
-  name: String!
+  id: String!
 }
 
 type Query {
-  todos: [Todo!]!
+  tasks(ownerId: String!): [Task!]!
+  task(id: String!): Task!
 }
 
-input NewTodo {
-  text: String!
-  userId: String!
+input CreateTaskInput {
+  title: String!
+  ownerId: String!
+  status: String!
+}
+
+input UpdateTaskInput {
+  title: String
+  status: String
 }
 
 type Mutation {
-  createTodo(input: NewTodo!): Todo!
+  createTask(input: CreateTaskInput!): Task!
 }
